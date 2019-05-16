@@ -92,7 +92,7 @@ if(mysqli_num_rows($datos)>0){
     mysqli_close($conexion);
     exit;
 
-  }else if($fila['estado']==3){ // PARA COMPRAR OBJETOS DE LA TIENDA.
+  /*}else if($fila['estado']==3){ // PARA COMPRAR OBJETOS DE LA TIENDA.
 
     if(!(is_numeric($message))){
       $response = "⛔ $firstname ¿qué te pensabas que somos tontos aquí o qué? Eso no es ningún identificador.";
@@ -616,7 +616,7 @@ if(mysqli_num_rows($datos)>0){
 
   mysqli_close($conexion);
   exit;
-
+*/
 }else if($fila['estado']==6){
 
   if($message == 'No' || $message == 'no'){
