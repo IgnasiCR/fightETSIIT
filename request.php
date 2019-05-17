@@ -94,7 +94,7 @@ switch($command){
     $response .="@IgnasiCR\n@ManuJNR\n";
     $response .="\n🎮 <b>Testers/Colaboradores</b>\n";
     $response .="@DarkAsdfgh\n@laurator\n@Sheisenn\n@Nekire\n";
-    $response .="\n🤺 Versión 1.0 - Fight ETSIIT\n";
+    $response .="\n🤺 Versión 1.1 - Fight ETSIIT\n";
 
     sendDeleteMessage($userId, $messageId, $response, FALSE);
 
@@ -270,8 +270,8 @@ switch($command){
           if(mysqli_num_rows($datos)<=0){
             $response = "⛔ ¿Estás intentando comprar un objeto de la tienda que no te pertenece? No intentes pasarte de listo o te prohibiré la entrada. ¡FUERA!";
             sendDeleteMessage($userId, $messageId, $response, FALSE);
-            $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-            mysqli_query($conexion, $consulta);
+            /*$consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+            mysqli_query($conexion, $consulta);*/
             mysqli_close($conexion);
             exit;
           }
@@ -306,7 +306,7 @@ switch($command){
 
             $dineroRestar = $dineroActual - $dinero;
 
-            $consulta="UPDATE jugadores SET ataque=$ataqueSumar, vida='$vidaSumar', defensa='$defensaSumar', dinero='$dineroRestar', estado='0' WHERE idUsuario='$userId';";
+            $consulta="UPDATE jugadores SET ataque=$ataqueSumar, vida='$vidaSumar', defensa='$defensaSumar', dinero='$dineroRestar' WHERE idUsuario='$userId';";
             mysqli_query($conexion, $consulta);
 
             $consulta2="INSERT INTO compras (idUsuario, idObjeto, fecha) VALUES('$userId','$message',NOW());";
@@ -320,18 +320,18 @@ switch($command){
             $response = "⛔ No tienes suficiente dinero para hacer la compra del objeto. Inténtalo de nuevo en cuánto consigas el dinero necesario.";
             sendMessage($userId, $response, FALSE);
 
-            $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-            mysqli_query($conexion, $consulta);
+            /*$consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+            mysqli_query($conexion, $consulta);*/
 
           }
 
         }else{
 
-          $response = "⛔ El identificador que has seleccionado es incorrecto, si quieres volver a comprar algo de verdad utiliza de nuevo /comprar <id>.";
+          $response = "⛔ El identificador que has seleccionado es incorrecto, si quieres volver a comprar algo de verdad utiliza de nuevo /comprar id.";
           sendMessage($userId, $response, FALSE);
 
-          $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-          mysqli_query($conexion, $consulta);
+          /*$consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+          mysqli_query($conexion, $consulta);*/
 
         }
 
@@ -340,8 +340,8 @@ switch($command){
         $response = "⛔ Lo siento pero no hay ningún objeto a la venta en la tienda, intentálo en otro momento.";
         sendMessage($userId, $response, FALSE);
 
-        $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-        mysqli_query($conexion, $consulta);
+        /*$consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+        mysqli_query($conexion, $consulta);*/
 
       }
 
@@ -427,7 +427,12 @@ switch($command){
         case 'intruso': $iconoR = 🛸👽; break;
       }
 
-      $response .= "\n$icono <b>Posicion $contador:</b>\n\n👤 Nombre: $nombreUsuario\n$iconoR Raza: $raza\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
+      $consulta2 = "SELECT COUNT(*) as total FROM jugadores;";
+      $datos2 = mysqli_query($conexion, $consulta2);
+      $fila=mysqli_fetch_array($datos2,MYSQLI_ASSOC);
+      $cantidadUsuarios = $fila['total'];
+
+      $response .= "\n$icono <b>Posicion $contador/$cantidadUsuarios:</b>\n\n👤 Nombre: $nombreUsuario\n$iconoR Raza: $raza\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
       $salida = false;
 
       }
@@ -660,7 +665,7 @@ switch($command){
 
     include 'conexion2.php';
     $usuario2=mysqli_real_escape_string($conexion,$userId);
-    $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+    $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$usuario2';";
     mysqli_query($conexion2,$consulta2);
     mysqli_close($conexion2);
 
@@ -681,7 +686,8 @@ switch($command){
 
     if($nombreJ1 != $message){
 
-    $consultaJ2 = "SELECT * FROM jugadores WHERE nombre='$message';";
+    $usuarioJ2=mysqli_real_escape_string($conexion,$message);
+    $consultaJ2 = "SELECT * FROM jugadores WHERE nombre='$usuarioJ2';";
     $datosJ2 = mysqli_query($conexion,$consultaJ2);
 
     if(mysqli_num_rows($datosJ2)>0){
@@ -697,14 +703,11 @@ switch($command){
       $ataqueJ2 = $filaJ2['ataque'];
 
       if($nivelJ2<($nivelJ1-3) || $nivelJ2>($nivelJ1+3)){
-        $response = "⛔ El jugador con el que quieres luchar le sacas o te saca 3 niveles, si quieres luchar contra él puedes hacerlo con /lucharamistoso <usuario>.";
-        sendMessage($userId, $response, FALSE);
 
-        $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-        mysqli_query($conexion, $consulta);
+        $response = "⛔ El jugador con el que quieres luchar le sacas o te saca 3 niveles, si quieres luchar contra él puedes hacerlo con /lucharamistoso nombre";
+        sendMessage($idJ1, $response, FALSE);
 
         include 'conexion2.php';
-        $usuario2=mysqli_real_escape_string($conexion,$userId);
         $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
         mysqli_query($conexion2,$consulta2);
         mysqli_close($conexion2);
@@ -769,7 +772,7 @@ switch($command){
             $vidaJ2 = $vidaJ2 - $ataqueRJ1;
           }
 
-          $response = "⚔🔵 ¡Has atacado a $message! Le has hecho $ataqueRJ1 de daño. ¡Le queda $vidaJ2 de vida!";
+          $response = "⚔🔵 ¡Has atacado a $nombreJ2! Le has hecho $ataqueRJ1 de daño. ¡Le queda $vidaJ2 de vida!";
           sendMessage($userId, $response, FALSE);
 
           if($vidaJ2 > 0){
@@ -783,7 +786,7 @@ switch($command){
             $vidaJ1 = $vidaJ1 - $ataqueRJ2;
           }
 
-            $response = "⚔🔴 ¡Te ha atacado $message! Te ha quitado $ataqueRJ2 de vida. ¡Te queda $vidaJ1 de vida!";
+            $response = "⚔🔴 ¡Te ha atacado $nombreJ2! Te ha quitado $ataqueRJ2 de vida. ¡Te queda $vidaJ1 de vida!";
             sendMessage($userId, $response, FALSE);
 
           }
@@ -858,11 +861,11 @@ switch($command){
             $defensaInsertar = $fila['defensa'] + rand(2,6);
             $vidaInsertar = $fila['vida'] + rand(2,6);
 
-            $consulta3="UPDATE jugadores SET estado='0', muertes=$muertesInsertar, peleas_posibles=$partidasJugadas, nivel=$nivelInsertar, dinero=$dineroInsertar, `exp`=$expInsertar, ataque=$ataqueInsertar, defensa=$defensaInsertar, vida=$vidaInsertar WHERE idUsuario=$idJ1;";
+            $consulta3="UPDATE jugadores SET muertes=$muertesInsertar, peleas_posibles=$partidasJugadas, nivel=$nivelInsertar, dinero=$dineroInsertar, `exp`=$expInsertar, ataque=$ataqueInsertar, defensa=$defensaInsertar, vida=$vidaInsertar WHERE idUsuario=$idJ1;";
             mysqli_query($conexion,$consulta3);
 
           }else{
-            $consulta3="UPDATE jugadores SET estado='0', muertes=$muertesInsertar, peleas_posibles=$partidasJugadas, dinero=$dineroInsertar, `exp`=$expInsertar WHERE idUsuario=$idJ1;";
+            $consulta3="UPDATE jugadores SET muertes=$muertesInsertar, peleas_posibles=$partidasJugadas, dinero=$dineroInsertar, `exp`=$expInsertar WHERE idUsuario=$idJ1;";
             mysqli_query($conexion,$consulta3);
           }
 
@@ -874,7 +877,7 @@ switch($command){
       }
 
     }else{
-      $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio para luchar contra alguien de forma aleatoria.";
+      $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio nombre, para luchar contra alguien de forma aleatoria.";
       sendMessage($userId, $response, FALSE);
 
       include 'conexion2.php';
@@ -883,8 +886,8 @@ switch($command){
       mysqli_query($conexion2,$consulta2);
       mysqli_close($conexion2);
 
-      $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-      mysqli_query($conexion, $consulta);
+      /*$consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+      mysqli_query($conexion, $consulta);*/
     }
 
   }else{
@@ -897,8 +900,8 @@ switch($command){
     mysqli_query($conexion2,$consulta2);
     mysqli_close($conexion2);
 
-    $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-    mysqli_query($conexion, $consulta);
+    /*$consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+    mysqli_query($conexion, $consulta);*/
   }
 
   include 'conexion2.php';
@@ -1031,7 +1034,7 @@ switch($command){
               $vidaJ2 = $vidaJ2 - $ataqueRJ1;
             }
 
-            $response = "⚔🔵 ¡Has atacado a $message! Le has hecho $ataqueRJ1 de daño. ¡Le queda $vidaJ2 de vida!";
+            $response = "⚔🔵 ¡Has atacado a $nombreJ2! Le has hecho $ataqueRJ1 de daño. ¡Le queda $vidaJ2 de vida!";
             sendMessage($userId, $response, FALSE);
 
             if($vidaJ2 > 0){
@@ -1045,7 +1048,7 @@ switch($command){
               $vidaJ1 = $vidaJ1 - $ataqueRJ2;
             }
 
-              $response = "⚔🔴 ¡Te ha atacado $message! Te ha quitado $ataqueRJ2 de vida. ¡Te queda $vidaJ1 de vida!";
+              $response = "⚔🔴 ¡Te ha atacado $nombreJ2! Te ha quitado $ataqueRJ2 de vida. ¡Te queda $vidaJ1 de vida!";
               sendMessage($userId, $response, FALSE);
 
             }
@@ -1054,22 +1057,22 @@ switch($command){
 
           if($vidaJ1 <= 0){
 
-            $response = "💀 ¡Has salido derrotado contra $message! Inténtalo más tarde.";
+            $response = "💀 ¡Has salido derrotado contra $nombreJ2! Inténtalo más tarde.";
             sendMessage($userId, $response, FALSE);
 
-            $consulta = "UPDATE jugadores SET estado=0 WHERE idUsuario=$idJ1;";
-            mysqli_query($conexion,$consulta);
+            /*$consulta = "UPDATE jugadores SET estado=0 WHERE idUsuario=$idJ1;";
+            mysqli_query($conexion,$consulta);*/
 
             $consulta4 = "INSERT INTO luchas (jugadorUno, jugadorDos, fecha, victoria, tipo) VALUES('$idJ1','$idJ2',NOW(),'0','amistoso');";
             mysqli_query($conexion,$consulta4);
 
           }else if($vidaJ2 <= 0){
 
-            $response = "🏆 ¡Has ganado contra $message! Enhorabuena.";
+            $response = "🏆 ¡Has ganado contra $nombreJ2! Enhorabuena.";
             sendMessage($userId, $response, FALSE);
 
-            $consulta3="UPDATE jugadores SET estado='0' WHERE idUsuario=$idJ1;";
-            mysqli_query($conexion,$consulta3);
+            /*$consulta3="UPDATE jugadores SET estado='0' WHERE idUsuario=$idJ1;";
+            mysqli_query($conexion,$consulta3);*/
 
             $consulta4 = "INSERT INTO luchas (jugadorUno, jugadorDos, fecha, victoria, tipo) VALUES('$idJ1','$idJ2',NOW(),'1','amistoso');";
             mysqli_query($conexion,$consulta4);
@@ -1077,7 +1080,7 @@ switch($command){
           }
 
       }else{
-        $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio para luchar contra alguien de forma aleatoria.";
+        $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio nombre, para luchar contra alguien de forma aleatoria.";
         sendMessage($userId, $response, FALSE);
 
         include 'conexion2.php';
@@ -1086,8 +1089,8 @@ switch($command){
         mysqli_query($conexion2,$consulta2);
         mysqli_close($conexion2);
 
-        $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-        mysqli_query($conexion, $consulta);
+        /*$consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+        mysqli_query($conexion, $consulta);*/
       }
 
       }else{
@@ -1100,8 +1103,8 @@ switch($command){
       mysqli_query($conexion2,$consulta2);
       mysqli_close($conexion2);
 
-      $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
-      mysqli_query($conexion, $consulta);
+      /*$consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
+      mysqli_query($conexion, $consulta);*/
       }
 
       include 'conexion2.php';
