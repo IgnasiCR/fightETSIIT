@@ -449,7 +449,7 @@ switch($command){
   // COMANDO PARA MOSTRAR EL RANKING GENERAL.
   case '/ranking': case '/ranking@FightETSIIT_Bot':
   include 'conexion.php';
-    $consulta = "SELECT * FROM jugadores ORDER BY muertes DESC LIMIT 5;";
+    $consulta = "SELECT * FROM jugadores ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
 
@@ -466,7 +466,9 @@ switch($command){
         case '1': $icono = 🥇; break;
         case '2': $icono = 🥈; break;
         case '3': $icono = 🥉; break;
-        default: $icono = 🏅; break;
+        case '4': $icono = 🏅; break;
+        case '5': $icono = 🏅; break;
+        default: $icono = "🎗"; break;
       }
 
       switch($raza){
@@ -488,7 +490,7 @@ switch($command){
   // COMANDO PARA MOSTRAR EL RANKING DE INFORMÁTICA.
   case '/rankinginformatica': case '/rankinginformatica@FightETSIIT_Bot':
     include 'conexion.php';
-    $consulta = "SELECT * FROM jugadores WHERE raza='informático' ORDER BY muertes DESC LIMIT 5;";
+    $consulta = "SELECT * FROM jugadores WHERE raza='informático' ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
 
@@ -504,7 +506,9 @@ switch($command){
         case '1': $icono = 🥇; break;
         case '2': $icono = 🥈; break;
         case '3': $icono = 🥉; break;
-        default: $icono = 🏅; break;
+        case '4': $icono = 🏅; break;
+        case '5': $icono = 🏅; break;
+        default: $icono = "🎗"; break;
       }
 
       $response .= "\n$icono <b>Posicion $contador:</b>\n\n👤 Nombre: $nombreUsuario\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
@@ -523,7 +527,7 @@ switch($command){
   // COMANDO PARA MOSTRAR EL RANKING DE TELECOS.
   case '/rankingteleco': case '/rankingteleco@FightETSIIT_Bot':
   include 'conexion.php';
-    $consulta = "SELECT * FROM jugadores WHERE raza='teleco' ORDER BY muertes DESC LIMIT 5;";
+    $consulta = "SELECT * FROM jugadores WHERE raza='teleco' ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
 
@@ -539,7 +543,9 @@ switch($command){
         case '1': $icono = 🥇; break;
         case '2': $icono = 🥈; break;
         case '3': $icono = 🥉; break;
-        default: $icono = 🏅; break;
+        case '4': $icono = 🏅; break;
+        case '5': $icono = 🏅; break;
+        default: $icono = "🎗"; break;
       }
 
       $response .= "\n$icono <b>Posicion $contador:</b>\n\n👤 Nombre: $nombreUsuario\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
@@ -558,7 +564,7 @@ switch($command){
   // COMANDO PARA MOSTRAR EL RANKING DE INTRUSOS.
   case '/rankingintruso': case '/rankingintruso@FightETSIIT_Bot':
   include 'conexion.php';
-    $consulta = "SELECT * FROM jugadores WHERE raza='intruso' ORDER BY muertes DESC LIMIT 5;";
+    $consulta = "SELECT * FROM jugadores WHERE raza='intruso' ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
 
@@ -574,7 +580,9 @@ switch($command){
         case '1': $icono = 🥇; break;
         case '2': $icono = 🥈; break;
         case '3': $icono = 🥉; break;
-        default: $icono = 🏅; break;
+        case '4': $icono = 🏅; break;
+        case '5': $icono = 🏅; break;
+        default: $icono = "🎗"; break;
       }
 
       $response .= "\n$icono <b>Posicion $contador:</b>\n\n👤 Nombre: $nombreUsuario\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
