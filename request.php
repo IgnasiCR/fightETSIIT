@@ -1,7 +1,7 @@
 <?php
 
 include_once 'funciones.php';
-include_once 'variables.php';
+include_once 'config/variables.php';
 
 // CON EL EXPLODE TOMAMOS EL PRIMER VALOR DEL MENSAJE ASÍ VEMOS SI ESTÁ USANDO EL COMANDO O NO.
 $arr = explode(' ',trim($message));
@@ -14,7 +14,7 @@ switch($command){
   // SISTEM PARA RENOVAR LUCHAS.
 
   case '/renovar': case '/renovar@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
   if($userId == '444137662'){
 
     $consulta="UPDATE jugadores SET estado_pelea=0, peleas_posibles=30;";
@@ -35,7 +35,7 @@ switch($command){
 
   // SISTEMA PARA ENVIAR MENSAJES A TODOS LOS USUARIOS DE FIGHT ETSIIT.
   case '/enviarmensaje': case '/enviarmensaje@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     if($userId == '444137662'){
 
     $usuario=mysqli_real_escape_string($conexion,$userId);
@@ -113,7 +113,7 @@ switch($command){
 
     // SISTEMA DE REGISTRO DEL USUARIO.
     case '/registrarse': case '/registrarse@FightETSIIT_Bot':
-    include 'conexion.php';
+    include 'config/conexion.php';
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
     $datos=mysqli_query($conexion,$consulta);
@@ -135,7 +135,7 @@ switch($command){
 
   // COMANDO PARA QUE EL USUARIO PUEDA CONOCER LAS ESTADÍSTICAS DE SU JUGADOR.
   case '/mipersonaje': case 'mipersonaje@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
     $datos=mysqli_query($conexion,$consulta);
@@ -176,7 +176,7 @@ switch($command){
 
   // COMANDO PARA QUE EL USUARIO PUEDA VER AL TIENDA OFICIAL DE OBJETOS.
   case '/tienda': case '/tienda@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
     $datos=mysqli_query($conexion,$consulta);
@@ -226,7 +226,7 @@ switch($command){
 
   // SISTEMA PARA QUE EL USUARIO PUEDA REALIZAR COMPRAS DE OBJETOS.
   case '/comprar': case '/comprar@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
     $datos=mysqli_query($conexion,$consulta);
@@ -358,7 +358,7 @@ switch($command){
   // SISTEMA PARA QUE EL USUARIO PUEDA CAMBIARSE DE RAZA.
 
   case '/cambiarseraza': case '/cambiarseraza@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
     $datos=mysqli_query($conexion,$consulta);
@@ -393,7 +393,7 @@ switch($command){
 
   // COMANDO PARA MOSTRAR EL RANKING PROPIO DEL JUGADOR.
   case '/miranking': case '/miranking@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $consulta = "SELECT * FROM jugadores ORDER BY muertes DESC;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
@@ -448,7 +448,7 @@ switch($command){
 
   // COMANDO PARA MOSTRAR EL RANKING GENERAL.
   case '/ranking': case '/ranking@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $consulta = "SELECT * FROM jugadores ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
@@ -489,7 +489,7 @@ switch($command){
 
   // COMANDO PARA MOSTRAR EL RANKING DE INFORMÁTICA.
   case '/rankinginformatica': case '/rankinginformatica@FightETSIIT_Bot':
-    include 'conexion.php';
+    include 'config/conexion.php';
     $consulta = "SELECT * FROM jugadores WHERE raza='informático' ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
@@ -526,7 +526,7 @@ switch($command){
 
   // COMANDO PARA MOSTRAR EL RANKING DE TELECOS.
   case '/rankingteleco': case '/rankingteleco@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $consulta = "SELECT * FROM jugadores WHERE raza='teleco' ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
@@ -563,7 +563,7 @@ switch($command){
 
   // COMANDO PARA MOSTRAR EL RANKING DE INTRUSOS.
   case '/rankingintruso': case '/rankingintruso@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $consulta = "SELECT * FROM jugadores WHERE raza='intruso' ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
@@ -600,7 +600,7 @@ switch($command){
 
   // COMANDO PARA CONOCER LAS ÚLTIMAS 5 LUCHAS QUE HAS REALIZADO.
   case '/ultimasluchas': case '/ultimasluchas@FightETSIIT_Bot':
-  include 'conexion.php';
+  include 'config/conexion.php';
     $consulta="SELECT * FROM luchas WHERE jugadorUno=$userId ORDER BY idLucha DESC LIMIT 5;";
     $datos=mysqli_query($conexion,$consulta);
 
@@ -642,7 +642,7 @@ switch($command){
   // SISTEMA PARA LUCHAR DE FORMA COMPETITIVA CONTRA UN JUGADOR EN CONCRETO.
   case '/luchar': case '/luchar@FightETSIIT_Bot':
 
-  include 'conexion2.php';
+  include 'config/conexion2.php';
 
   $consulta2="SELECT * FROM jugadores WHERE idUsuario='$userId';";
   $datos2=mysqli_query($conexion2,$consulta2);
@@ -659,7 +659,7 @@ switch($command){
     mysqli_close($conexion2);
   }
 
-  include 'conexion.php';
+  include 'config/conexion.php';
 
   $usuario=mysqli_real_escape_string($conexion,$userId);
   $consulta="SELECT * FROM jugadores WHERE idUsuario='$usuario';";
@@ -671,7 +671,7 @@ switch($command){
     $response = "⛔ $firstname debes descansar un poco antes de enfrentarte a otros enemigos.";
     sendMessage($userId, $response, FALSE);
 
-    include 'conexion2.php';
+    include 'config/conexion2.php';
     $usuario2=mysqli_real_escape_string($conexion,$userId);
     $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$usuario2';";
     mysqli_query($conexion2,$consulta2);
@@ -715,7 +715,7 @@ switch($command){
         $response = "⛔ El jugador con el que quieres luchar le sacas o te saca 3 niveles, si quieres luchar contra él puedes hacerlo con /lucharamistoso nombre";
         sendMessage($idJ1, $response, FALSE);
 
-        include 'conexion2.php';
+        include 'config/conexion2.php';
         $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
         mysqli_query($conexion2,$consulta2);
         mysqli_close($conexion2);
@@ -888,7 +888,7 @@ switch($command){
       $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio nombre, para luchar contra alguien de forma aleatoria.";
       sendMessage($userId, $response, FALSE);
 
-      include 'conexion2.php';
+      include 'config/conexion2.php';
       $usuario2=mysqli_real_escape_string($conexion,$userId);
       $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
       mysqli_query($conexion2,$consulta2);
@@ -902,7 +902,7 @@ switch($command){
     $response = "⛔ $firstname, ¿te crees que puedes luchar contra ti? No estoy a favor del suicidio.";
     sendMessage($userId, $response, FALSE);
 
-    include 'conexion2.php';
+    include 'config/conexion2.php';
     $usuario2=mysqli_real_escape_string($conexion,$userId);
     $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
     mysqli_query($conexion2,$consulta2);
@@ -912,7 +912,7 @@ switch($command){
     mysqli_query($conexion, $consulta);*/
   }
 
-  include 'conexion2.php';
+  include 'config/conexion2.php';
   $usuario2=mysqli_real_escape_string($conexion,$userId);
   $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
   mysqli_query($conexion2,$consulta2);
@@ -931,7 +931,7 @@ switch($command){
   // SISTEMA PARA LUCHAR DE FORMA AMISTOSA CONTRA UN JUGADOR EN CONCRETO
   case '/lucharamistoso': case '/lucharamistoso@FightETSIIT_Bot':
 
-  include 'conexion2.php';
+  include 'config/conexion2.php';
 
   $consulta2="SELECT * FROM jugadores WHERE idUsuario='$userId';";
   $datos2=mysqli_query($conexion2,$consulta2);
@@ -948,7 +948,7 @@ switch($command){
     mysqli_close($conexion2);
   }
 
-  include 'conexion.php';
+  include 'config/conexion.php';
 
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
@@ -1091,7 +1091,7 @@ switch($command){
         $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio nombre, para luchar contra alguien de forma aleatoria.";
         sendMessage($userId, $response, FALSE);
 
-        include 'conexion2.php';
+        include 'config/conexion2.php';
         $usuario2=mysqli_real_escape_string($conexion,$userId);
         $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
         mysqli_query($conexion2,$consulta2);
@@ -1105,7 +1105,7 @@ switch($command){
       $response = "⛔ $firstname, ¿te crees que puedes luchar contra ti? No estoy a favor del suicidio.";
       sendMessage($userId, $response, FALSE);
 
-      include 'conexion2.php';
+      include 'config/conexion2.php';
       $usuario2=mysqli_real_escape_string($conexion,$userId);
       $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
       mysqli_query($conexion2,$consulta2);
@@ -1115,7 +1115,7 @@ switch($command){
       mysqli_query($conexion, $consulta);*/
       }
 
-      include 'conexion2.php';
+      include 'config/conexion2.php';
       $usuario2=mysqli_real_escape_string($conexion,$userId);
       $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
       mysqli_query($conexion2,$consulta2);
@@ -1134,7 +1134,7 @@ switch($command){
   // SISTEMA PARA LUCHAR DE FORMA COMPETITIVA CONTRA UN BOT.
   case '/lucharbot': case '/lucharbot@FightETSIIT_Bot':
 
-  include 'conexion2.php';
+  include 'config/conexion2.php';
 
   $consulta2="SELECT * FROM jugadores WHERE idUsuario='$userId';";
   $datos2=mysqli_query($conexion2,$consulta2);
@@ -1151,7 +1151,7 @@ switch($command){
     mysqli_close($conexion2);
   }
 
-  include 'conexion.php';
+  include 'config/conexion.php';
 
   $usuario=mysqli_real_escape_string($conexion,$userId);
   $consulta="SELECT * FROM jugadores WHERE idUsuario='$usuario';";
@@ -1160,7 +1160,7 @@ switch($command){
   $fila=mysqli_fetch_array($datos,MYSQLI_ASSOC);
 
   if($fila['estado_pelea']==1){ // COMPROBAR SI EL USUARIO PUEDE PELEAR MÁS O NO.
-    include 'conexion2.php';
+    include 'config/conexion2.php';
     $usuario2=mysqli_real_escape_string($conexion,$userId);
     $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
     mysqli_query($conexion2,$consulta2);
@@ -1383,14 +1383,14 @@ switch($command){
       $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
 
-      include 'conexion2.php';
+      include 'config/conexion2.php';
       $usuario2=mysqli_real_escape_string($conexion,$userId);
       $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
       mysqli_query($conexion2,$consulta2);
       mysqli_close($conexion2);
     }
 
-    include 'conexion2.php';
+    include 'config/conexion2.php';
     $usuario2=mysqli_real_escape_string($conexion,$userId);
     $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
     mysqli_query($conexion2,$consulta2);
@@ -1404,7 +1404,7 @@ switch($command){
   // SISTEMA PARA LUCHAR DE FORMA COMPETITIVA CONTRA UN JUGADOR ALEATORIO.
   case '/lucharaleatorio': case '/lucharaleatorio@FightETSIIT_Bot':
 
-  include 'conexion2.php';
+  include 'config/conexion2.php';
 
   $consulta2="SELECT * FROM jugadores WHERE idUsuario='$userId';";
   $datos2=mysqli_query($conexion2,$consulta2);
@@ -1421,7 +1421,7 @@ switch($command){
     mysqli_close($conexion2);
   }
 
-  include 'conexion.php';
+  include 'config/conexion.php';
 
   $usuario=mysqli_real_escape_string($conexion,$userId);
   $consulta="SELECT * FROM jugadores WHERE idUsuario='$usuario';";
@@ -1430,7 +1430,7 @@ switch($command){
   $fila=mysqli_fetch_array($datos,MYSQLI_ASSOC);
 
     if($fila['estado_pelea']==1){ // COMPROBAR SI EL USUARIO PUEDE PELEAR MÁS O NO.
-      include 'conexion2.php';
+      include 'config/conexion2.php';
       $usuario2=mysqli_real_escape_string($conexion,$userId);
       $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
       mysqli_query($conexion2,$consulta2);
@@ -1464,7 +1464,7 @@ switch($command){
           }
           $contAleatoria = rand(0,$contador-1);
         }else{
-          include 'conexion2.php';
+          include 'config/conexion2.php';
           $usuario2=mysqli_real_escape_string($conexion,$userId);
           $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
           mysqli_query($conexion2,$consulta2);
@@ -1671,14 +1671,14 @@ switch($command){
       $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
 
-      include 'conexion2.php';
+      include 'config/conexion2.php';
       $usuario2=mysqli_real_escape_string($conexion,$userId);
       $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
       mysqli_query($conexion2,$consulta2);
       mysqli_close($conexion2);
     }
 
-    include 'conexion2.php';
+    include 'config/conexion2.php';
     $usuario2=mysqli_real_escape_string($conexion,$userId);
     $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
     mysqli_query($conexion2,$consulta2);

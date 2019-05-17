@@ -2,7 +2,7 @@
 
 // SISTEMA DE ESTADOS DEL USUARIO PARA SABER QUE SE VA A HACER CON SU PRÓXIMO MENSAJE.
 
-include 'conexion.php';
+include 'config/conexion.php';
 $message = $update["message"]["text"];
 
 $usuario=mysqli_real_escape_string($conexion,$userId);
@@ -241,7 +241,7 @@ if(mysqli_num_rows($datos)>0){
         $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
         mysqli_query($conexion, $consulta);
 
-        include 'conexion2.php';
+        include 'config/conexion2.php';
         $usuario2=mysqli_real_escape_string($conexion,$userId);
         $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
         mysqli_query($conexion2,$consulta2);
@@ -415,7 +415,7 @@ if(mysqli_num_rows($datos)>0){
       $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio para luchar contra alguien de forma aleatoria.";
       sendMessage($userId, $response, FALSE);
 
-      include 'conexion2.php';
+      include 'config/conexion2.php';
       $usuario2=mysqli_real_escape_string($conexion,$userId);
       $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
       mysqli_query($conexion2,$consulta2);
@@ -429,7 +429,7 @@ if(mysqli_num_rows($datos)>0){
     $response = "⛔ $firstname, ¿te crees que puedes luchar contra ti? No estoy a favor del suicidio.";
     sendMessage($userId, $response, FALSE);
 
-    include 'conexion2.php';
+    include 'config/conexion2.php';
     $usuario2=mysqli_real_escape_string($conexion,$userId);
     $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
     mysqli_query($conexion2,$consulta2);
@@ -439,7 +439,7 @@ if(mysqli_num_rows($datos)>0){
     mysqli_query($conexion, $consulta);
   }
 
-  include 'conexion2.php';
+  include 'config/conexion2.php';
   $usuario2=mysqli_real_escape_string($conexion,$userId);
   $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
   mysqli_query($conexion2,$consulta2);
@@ -584,7 +584,7 @@ if(mysqli_num_rows($datos)>0){
     $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio para luchar contra alguien de forma aleatoria.";
     sendMessage($userId, $response, FALSE);
 
-    include 'conexion2.php';
+    include 'config/conexion2.php';
     $usuario2=mysqli_real_escape_string($conexion,$userId);
     $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
     mysqli_query($conexion2,$consulta2);
@@ -598,7 +598,7 @@ if(mysqli_num_rows($datos)>0){
   $response = "⛔ $firstname, ¿te crees que puedes luchar contra ti? No estoy a favor del suicidio.";
   sendMessage($userId, $response, FALSE);
 
-  include 'conexion2.php';
+  include 'config/conexion2.php';
   $usuario2=mysqli_real_escape_string($conexion,$userId);
   $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
   mysqli_query($conexion2,$consulta2);
@@ -608,7 +608,7 @@ if(mysqli_num_rows($datos)>0){
   mysqli_query($conexion, $consulta);
   }
 
-  include 'conexion2.php';
+  include 'config/conexion2.php';
   $usuario2=mysqli_real_escape_string($conexion,$userId);
   $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$userId';";
   mysqli_query($conexion2,$consulta2);
