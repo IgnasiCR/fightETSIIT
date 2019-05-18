@@ -227,6 +227,11 @@ switch($command){
   // SISTEMA PARA QUE EL USUARIO PUEDA REALIZAR COMPRAS DE OBJETOS.
   case '/comprar': case '/comprar@FightETSIIT_Bot':
   include 'config/conexion.php';
+  	if(empty($message)){
+  		$response = "⛔ $firstname debes usar /comprar id";
+        sendDeleteMessage($userId, $messageId, $response, FALSE);
+  	}
+
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
     $datos=mysqli_query($conexion,$consulta);
