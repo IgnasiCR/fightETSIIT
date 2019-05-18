@@ -226,11 +226,12 @@ switch($command){
 
   // SISTEMA PARA QUE EL USUARIO PUEDA REALIZAR COMPRAS DE OBJETOS.
   case '/comprar': case '/comprar@FightETSIIT_Bot':
-  include 'config/conexion.php';
   	if(empty($message)){
   		$response = "⛔ $firstname debes usar /comprar id";
-        sendDeleteMessage($userId, $messageId, $response, FALSE);
+      sendDeleteMessage($userId, $messageId, $response, FALSE);
+      exit;
   	}
+    include 'config/conexion.php';
 
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
@@ -890,7 +891,7 @@ switch($command){
       }
 
     }else{
-      $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio nombre, para luchar contra alguien de forma aleatoria.";
+      $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio, para luchar contra alguien de forma aleatoria.";
       sendMessage($userId, $response, FALSE);
 
       include 'config/conexion2.php';
@@ -1093,7 +1094,7 @@ switch($command){
           }
 
       }else{
-        $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio nombre, para luchar contra alguien de forma aleatoria.";
+        $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas o utiliza /lucharaleatorio, para luchar contra alguien de forma aleatoria.";
         sendMessage($userId, $response, FALSE);
 
         include 'config/conexion2.php';
