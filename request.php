@@ -75,7 +75,7 @@ switch($command){
   case '/ayuda': case '/ayuda@FightETSIIT_Bot':
 
     $response .= "❓ <b>¿Cómo funciona el sistema de luchas?</b>\nCada jugador tiene unas características (defensa, ataque y vida), y de forma aleatoria se calcula el ataque final que hará un jugador contra el otro teniendo en cuenta la defensa del contrincante. El sistema de lucha es totalmente automática por lo que el jugador atacará solo. Al final de la lucha se indicará que jugador ha sido el ganador, en caso de perder tan solo obtendrás experiencia, pero en caso de ganar también conseguirá oro.\n";
-    $response .="\n❓ <b>¿Qué tipo de luchas existen?</b>\nExisten dos tipos de luchas, las competitivas y las amistosas. En las competitivas ganes o pierdas conseguirás experiencia, y en caso de ganar conseguirás también dinero. En cambio en las amistosas no ganarás nada, ni experiencia ni dinero. Además hay que destacar que en las competitivas solo podrás luchar con gente -+3 niveles que tu, en las amistosas con quién quieras.\n";
+    $response .="\n❓ <b>¿Qué tipo de luchas existen?</b>\nExisten dos tipos de luchas, las competitivas y las amistosas. En las competitivas ganes o pierdas obtendrás experiencia y oro aunque pero en esta última será menor cantidad. En cambio en las amistosas no ganarás nada, ni experiencia ni dinero. Además hay que destacar que en las competitivas solo podrás luchar con gente -+3 niveles que tu, en las amistosas con quién quieras.\n";
     $response .="\n❓ <b>¿Cuántas veces puedo jugar?</b>\nComo máximo se puede jugar 30 luchas cada media hora. Tanto a las en punto como a las y media se regeneran todas las luchas posibles pero las que te quedaron anteriormente no se suman a estas. Aprovecha las 30 de cada media hora para poder conseguir estar en el ranking.\n";
     $response .="\n❓ <b>¿Cómo funciona el sistema de ranking?</b>\nEl ranking está ordenado por los asesinatos. Los jugadores con mayor asesinatos se encontrarán en este ranking, por lo tanto... ¡ponte a luchar para ser el primero!\n";
     $response .="\n❓ <b>¿Cuántos objetos puedo comprar en la tienda?</b>\nNo hay limite de objetos que puedas comprar en la tienda. Siempre y cuando tengas el dinero para hacerte con alguno de ellos podrás hacerlo.\n";
@@ -132,9 +132,52 @@ switch($command){
 
   break;
 
+  // COMANDO PARA QUE EL USUARIO PUEDA CONOCER LAS ESTADÍSTICAS DE OTRO JUGADOR.
+  case '/personaje': case '/personaje@FightETSIIT_Bot':
+
+  if(empty($message)){
+    $response = "⛔ $firstname debes indicarme un nombre cualesquiera de un jugador -> /personaje nombreJugador";
+    sendDeleteMessage($userId, $messageId, $response, FALSE);
+    exit;
+  }
+
+  include 'config/conexion.php';
+    $usuario=mysqli_real_escape_string($conexion,$message);
+    $consulta="SELECT * FROM `jugadores` WHERE nombre='$usuario';";
+    $datos=mysqli_query($conexion,$consulta);
+
+    if(mysqli_num_rows($datos) > 0){
+      $fila=mysqli_fetch_array($datos,MYSQLI_ASSOC);
+
+      $nombre = $fila['nombre'];
+      $raza = $fila['raza'];
+      $nivel = $fila['nivel'];
+      $muertes = $fila['muertes'];
+      $ataque = $fila['ataque'];
+      $defensa = $fila['defensa'];
+      $vida = $fila['vida'];
+
+      switch($raza){
+        case 'informático': $icono = 🖥; break;
+        case 'teleco': $icono = 📡; break;
+        case 'intruso': $icono = 🛸👽; break;
+      }
+
+      $response = "📊 <b>Estadísticas Personaje</b>\n\n👤 Nombre: $nombre\n$icono Raza: $raza\n🚩 Nivel: $nivel\n\n💀 Asesinatos: $muertes\n\n⚔ Ataque: $ataque\n🛡 Defensa: $defensa\n❤ Vida: $vida";
+      sendDeleteMessage($userId, $messageId, $response, FALSE);
+
+    }else{
+      $response = "⛔ $firstname no existe ningún jugador con ese nombre, intentálo más tarde cuándo lo sepas.";
+      sendDeleteMessage($userId, $messageId, $response, FALSE);
+    }
+
+    mysqli_close($conexion);
+    exit;
+
+  break;
 
   // COMANDO PARA QUE EL USUARIO PUEDA CONOCER LAS ESTADÍSTICAS DE SU JUGADOR.
-  case '/mipersonaje': case 'mipersonaje@FightETSIIT_Bot':
+  case '/mipersonaje': case '/mipersonaje@FightETSIIT_Bot':
   include 'config/conexion.php';
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
@@ -226,11 +269,13 @@ switch($command){
 
   // SISTEMA PARA QUE EL USUARIO PUEDA REALIZAR COMPRAS DE OBJETOS.
   case '/comprar': case '/comprar@FightETSIIT_Bot':
-  	if(empty($message)){
-  		$response = "⛔ $firstname debes usar /comprar id";
+
+    if(empty($message)){
+      $response = "⛔ $firstname debes indicarme un identificador cualesquiera de un objeto de la tienda -> /comprar identificador";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
       exit;
-  	}
+    }
+
     include 'config/conexion.php';
 
     $usuario=mysqli_real_escape_string($conexion,$userId);
@@ -459,7 +504,7 @@ switch($command){
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
 
-    $response .="<b>Ranking General</b>\n";
+    $response .="📉 <b>Ranking General</b>\n";
 
     while($fila=mysqli_fetch_array($datos,MYSQLI_ASSOC)){
 
@@ -493,15 +538,34 @@ switch($command){
 
   break;
 
-  // COMANDO PARA MOSTRAR EL RANKING DE INFORMÁTICA.
-  case '/rankinginformatica': case '/rankinginformatica@FightETSIIT_Bot':
+  // COMANDO PARA MOSTRAR EL RANKING DE ALGUNA RAZA EN CONCRETO.
+  case '/rankingraza': case '/rankingraza@FightETSIIT_Bot':
+
+    if(empty($message)){
+      $response = "⛔ $firstname debes indicarme una raza cualesquiera -> /rankingraza raza";
+      sendDeleteMessage($userId, $messageId, $response, FALSE);
+      exit;
+    }else{
+      if($message == 'Informático' || $message == 'Informatico' || $message == 'informático' || $message == 'informatico'){
+        $raza = "informático";
+      }else if($message == 'Teleco' || $message == 'teleco'){
+        $raza = "teleco";
+      }else if($message == 'Intruso' || $message == 'intruso'){
+        $raza = "intruso";
+      }else{
+        $response = "⁉ Lo siento, pero no entiendo lo que quieres decir, inténtalo de nuevo más tarde.";
+        sendMessage($userId, $response, FALSE);
+        exit;
+      }
+    }
+
     include 'config/conexion.php';
-    $consulta = "SELECT * FROM jugadores WHERE raza='informático' ORDER BY muertes DESC LIMIT 10;";
+    $consulta = "SELECT * FROM jugadores WHERE raza='$raza' ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
     $contador = 1;
 
     if(mysqli_num_rows($datos) > 0){
-      $response .="<b>Ranking Informática</b>\n";
+      $response .="📉 <b>Ranking $raza</b>\n";
     while($fila=mysqli_fetch_array($datos,MYSQLI_ASSOC)){
 
       $nombreUsuario = $fila['nombre'];
@@ -523,80 +587,6 @@ switch($command){
     }else{
       $response = "⛔ No existe ningún informático actualmente en el sistema.";
     }
-
-    sendDeleteMessage($userId, $messageId, $response, FALSE);
-    mysqli_close($conexion);
-    exit;
-
-  break;
-
-  // COMANDO PARA MOSTRAR EL RANKING DE TELECOS.
-  case '/rankingteleco': case '/rankingteleco@FightETSIIT_Bot':
-  include 'config/conexion.php';
-    $consulta = "SELECT * FROM jugadores WHERE raza='teleco' ORDER BY muertes DESC LIMIT 10;";
-    $datos=mysqli_query($conexion,$consulta);
-    $contador = 1;
-
-    if(mysqli_num_rows($datos) > 0){
-      $response .="<b>Ranking Telecomunicaciones</b>\n";
-    while($fila=mysqli_fetch_array($datos,MYSQLI_ASSOC)){
-
-      $nombreUsuario = $fila['nombre'];
-      $muertes = $fila['muertes'];
-      $nivel = $fila['nivel'];
-
-      switch($contador){
-        case '1': $icono = 🥇; break;
-        case '2': $icono = 🥈; break;
-        case '3': $icono = 🥉; break;
-        case '4': $icono = 🏅; break;
-        case '5': $icono = 🏅; break;
-        default: $icono = "🎗"; break;
-      }
-
-      $response .= "\n$icono <b>Posicion $contador:</b>\n\n👤 Nombre: $nombreUsuario\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
-      $contador++;
-    }
-  }else{
-      $response = "⛔ No existe ningún teleco actualmente en el sistema.";
-  }
-
-    sendDeleteMessage($userId, $messageId, $response, FALSE);
-    mysqli_close($conexion);
-    exit;
-
-  break;
-
-  // COMANDO PARA MOSTRAR EL RANKING DE INTRUSOS.
-  case '/rankingintruso': case '/rankingintruso@FightETSIIT_Bot':
-  include 'config/conexion.php';
-    $consulta = "SELECT * FROM jugadores WHERE raza='intruso' ORDER BY muertes DESC LIMIT 10;";
-    $datos=mysqli_query($conexion,$consulta);
-    $contador = 1;
-
-    if(mysqli_num_rows($datos) > 0){
-      $response .="<b>Ranking Intrusos</b>\n";
-    while($fila=mysqli_fetch_array($datos,MYSQLI_ASSOC)){
-
-      $nombreUsuario = $fila['nombre'];
-      $muertes = $fila['muertes'];
-      $nivel = $fila['nivel'];
-
-      switch($contador){
-        case '1': $icono = 🥇; break;
-        case '2': $icono = 🥈; break;
-        case '3': $icono = 🥉; break;
-        case '4': $icono = 🏅; break;
-        case '5': $icono = 🏅; break;
-        default: $icono = "🎗"; break;
-      }
-
-      $response .= "\n$icono <b>Posicion $contador:</b>\n\n👤 Nombre: $nombreUsuario\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
-      $contador++;
-    }
-  }else{
-    $response = "⛔ No existe ningún intruso actualmente en el sistema.";
-  }
 
     sendDeleteMessage($userId, $messageId, $response, FALSE);
     mysqli_close($conexion);
@@ -647,6 +637,12 @@ switch($command){
 
   // SISTEMA PARA LUCHAR DE FORMA COMPETITIVA CONTRA UN JUGADOR EN CONCRETO.
   case '/luchar': case '/luchar@FightETSIIT_Bot':
+
+  if(empty($message)){
+    $response = "⛔ $firstname debes indicarme un nombre cualesquiera de un jugador -> /luchar nombreJugador";
+    sendDeleteMessage($userId, $messageId, $response, FALSE);
+    exit;
+  }
 
   include 'config/conexion2.php';
 
@@ -936,6 +932,12 @@ switch($command){
 
   // SISTEMA PARA LUCHAR DE FORMA AMISTOSA CONTRA UN JUGADOR EN CONCRETO
   case '/lucharamistoso': case '/lucharamistoso@FightETSIIT_Bot':
+
+  if(empty($message)){
+    $response = "⛔ $firstname debes indicarme un nombre cualesquiera de un jugador -> /lucharamistoso nombreJugador";
+    sendDeleteMessage($userId, $messageId, $response, FALSE);
+    exit;
+  }
 
   include 'config/conexion2.php';
 
