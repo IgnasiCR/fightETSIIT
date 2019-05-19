@@ -9,6 +9,41 @@ $command = $arr[0];
 
 $message = substr(strstr($message," "), 1);
 
+if(is_numeric($command)){
+  include 'config/conexion.php';
+
+  $usuario=mysqli_real_escape_string($conexion,$userId);
+  $consulta="SELECT * FROM jugadores WHERE idUsuario='$usuario';";
+  $datos=mysqli_query($conexion,$consulta);
+
+  $fila=mysqli_fetch_array($datos,MYSQLI_ASSOC);
+  if(mysqli_num_rows($datos) > 0){
+    $verificacion = $fila['verificacion'];
+    $peleasPosibles = $fila['peleas_posibles'];
+    $estado = $fila['estado'];
+
+    if(($peleasPosibles == 10 || $peleasPosibles == 20) && $estado == 8){
+      if($command == $verificacion){
+        $usuario=mysqli_real_escape_string($conexion,$userId);
+        $consulta="UPDATE jugadores SET estado='9', verificacion=0 WHERE idUsuario='$usuario';";
+        mysqli_query($conexion,$consulta);
+
+        $response = "✅ ¡De acuerdo, $firstname! Te creeré, deberás utilizar de nuevo /luchar nombreJugador. Disculpa las molestias.";
+        sendMessage($userId, $response, FALSE);
+      }else{
+        $usuario=mysqli_real_escape_string($conexion,$userId);
+        $consulta="UPDATE jugadores SET estado='0', estado_pelea='1', peleas_posibles='0', verificacion=0 WHERE idUsuario='$usuario';";
+        mysqli_query($conexion,$consulta);
+
+        $response = "⛔ ¡Lo siento, $firstname! No has conseguido pasar la prueba anti-bot. ¡Te quedas sin luchas hasta la siguiente renovación.";
+        sendMessage($userId, $response, FALSE);
+      }
+    }
+  }
+  mysqli_close($conexion);
+  exit;
+}
+
 switch($command){
 
   // SISTEM PARA RENOVAR LUCHAS.
@@ -130,6 +165,8 @@ switch($command){
       sendDeleteMessage($userId, $messageId, $response, FALSE);
     }
 
+    mysqli_close($conexion);
+    exit;
   break;
 
   // COMANDO PARA QUE EL USUARIO PUEDA CONOCER LAS ESTADÍSTICAS DE OTRO JUGADOR.
@@ -694,7 +731,12 @@ switch($command){
     $ataqueJ1 = $fila['ataque'];
     $premiumJ1 = $fila['premium'];
 
+    $peleasPosibles = $fila['peleas_posibles'];
+    $estado = $fila['estado'];
+
     if($nombreJ1 != $message){
+
+      confirmacion($userId, $peleasPosibles, $estado, $firstname);
 
     $usuarioJ2=mysqli_real_escape_string($conexion,$message);
     $consultaJ2 = "SELECT * FROM jugadores WHERE nombre='$usuarioJ2';";
@@ -1191,6 +1233,11 @@ switch($command){
       $ataqueJ1 = $fila['ataque'];
       $premiumJ1 = $fila['premium'];
 
+      $peleasPosibles = $fila['peleas_posibles'];
+      $estado = $fila['estado'];
+
+      confirmacion($userId, $peleasPosibles, $estado, $firstname);
+
       $razaAleatoria = rand(0,2);
       if($razaAleatoria == 0){
         $razaJ2 = 'informático';
@@ -1460,6 +1507,11 @@ switch($command){
         $defensaJ1 = $fila['defensa'];
         $ataqueJ1 = $fila['ataque'];
         $premiumJ1 = $fila['premium'];
+
+        $peleasPosibles = $fila['peleas_posibles'];
+        $estado = $fila['estado'];
+
+        confirmacion($userId, $peleasPosibles, $estado, $firstname);
 
         $consultaJ2 = "SELECT * FROM jugadores WHERE nivel>=($nivelJ1-3) AND nivel<=($nivelJ1+3) AND idUsuario!='$userId';";
         $datosJ2 = mysqli_query($conexion,$consultaJ2);

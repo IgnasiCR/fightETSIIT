@@ -1,5 +1,53 @@
 <?php
 
+function confirmacion($userId, $peleasPosibles, $estado, $firstname){
+
+  if(($peleasPosibles == 10 || $peleasPosibles == 20) && $estado == 0){
+
+    $numeroUno = rand(1,20);
+    $numeroDos = rand(1,20);
+    $suma = $numeroUno + $numeroDos;
+
+    include 'config/conexion.php';
+    $usuario=mysqli_real_escape_string($conexion,$userId);
+    $consulta="UPDATE jugadores SET verificacion='$suma', estado=8 WHERE idUsuario='$usuario';";
+    mysqli_query($conexion,$consulta);
+    mysqli_close($conexion);
+
+    include 'config/conexion2.php';
+    $usuario2=mysqli_real_escape_string($conexion2,$userId);
+    $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$usuario2';";
+    mysqli_query($conexion2,$consulta2);
+    mysqli_close($conexion2);
+
+    $response = "❓ ¿$firstname serás capaz de pasar la prueba anti-bot? ¿Cuánto es $numeroUno + $numeroDos? Escribe la respuesta a continuación en números.";
+    sendMessage($userId, $response, FALSE);
+
+    exit;
+  }else if($estado == 8){
+    include 'config/conexion.php';
+    $usuario=mysqli_real_escape_string($conexion,$userId);
+    $consulta="UPDATE jugadores SET estado='0', estado_pelea='1', peleas_posibles='0', verificacion=0 WHERE idUsuario='$usuario';";
+    mysqli_query($conexion,$consulta);
+
+    include 'config/conexion2.php';
+    $usuario2=mysqli_real_escape_string($conexion2,$userId);
+    $consulta2="UPDATE jugadores SET estado='0' WHERE idUsuario='$usuario2';";
+    mysqli_query($conexion2,$consulta2);
+    mysqli_close($conexion2);
+
+    $response = "⛔ ¡Lo siento, $firstname! No has conseguido pasar la prueba anti-bot. ¡Te quedas sin luchas hasta la siguiente renovación.";
+    sendMessage($userId, $response, FALSE);
+    exit;
+  }else if($estado == 9){
+    include 'config/conexion.php';
+    $usuario=mysqli_real_escape_string($conexion,$userId);
+    $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$usuario';";
+    mysqli_query($conexion,$consulta);
+  }
+
+}
+
 function sendDeleteMessage($chatId, $messageId, $response, $links){
   sendMessage($chatId, $response, $links);
   deleteMessage($chatId, $messageId);
