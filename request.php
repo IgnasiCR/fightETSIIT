@@ -169,55 +169,21 @@ switch($command){
     exit;
   break;
 
-  // COMANDO PARA QUE EL USUARIO PUEDA CONOCER LAS ESTADÍSTICAS DE OTRO JUGADOR.
+  // COMANDO PARA QUE EL USUARIO PUEDA CONOCER LAS ESTADÍSTICAS DE TU/UN JUGADOR.
   case '/personaje': case '/personaje@FightETSIIT_Bot':
 
+  include 'config/conexion.php';
+
   if(empty($message)){
-    $response = "⛔ $firstname debes indicarme un nombre cualesquiera de un jugador -> /personaje nombreJugador";
-    sendDeleteMessage($userId, $messageId, $response, FALSE);
-    exit;
-  }
-
-  include 'config/conexion.php';
-    $usuario=mysqli_real_escape_string($conexion,$message);
-    $consulta="SELECT * FROM `jugadores` WHERE nombre='$usuario';";
-    $datos=mysqli_query($conexion,$consulta);
-
-    if(mysqli_num_rows($datos) > 0){
-      $fila=mysqli_fetch_array($datos,MYSQLI_ASSOC);
-
-      $nombre = $fila['nombre'];
-      $raza = $fila['raza'];
-      $nivel = $fila['nivel'];
-      $muertes = $fila['muertes'];
-      $ataque = $fila['ataque'];
-      $defensa = $fila['defensa'];
-      $vida = $fila['vida'];
-
-      switch($raza){
-        case 'informático': $icono = 🖥; break;
-        case 'teleco': $icono = 📡; break;
-        case 'intruso': $icono = 🛸👽; break;
-      }
-
-      $response = "📊 <b>Estadísticas Personaje</b>\n\n👤 Nombre: $nombre\n$icono Raza: $raza\n🚩 Nivel: $nivel\n\n💀 Asesinatos: $muertes\n\n⚔ Ataque: $ataque\n🛡 Defensa: $defensa\n❤ Vida: $vida";
-      sendDeleteMessage($userId, $messageId, $response, FALSE);
-
-    }else{
-      $response = "⛔ $firstname no existe ningún jugador con ese nombre, intentálo más tarde cuándo lo sepas.";
-      sendDeleteMessage($userId, $messageId, $response, FALSE);
-    }
-
-    mysqli_close($conexion);
-    exit;
-
-  break;
-
-  // COMANDO PARA QUE EL USUARIO PUEDA CONOCER LAS ESTADÍSTICAS DE SU JUGADOR.
-  case '/mipersonaje': case '/mipersonaje@FightETSIIT_Bot':
-  include 'config/conexion.php';
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
+    $mi = TRUE;
+  }else{
+    $usuario=mysqli_real_escape_string($conexion,$message);
+    $consulta="SELECT * FROM `jugadores` WHERE nombre='$usuario';";
+    $mi = FALSE;
+  }
+
     $datos=mysqli_query($conexion,$consulta);
 
     if(mysqli_num_rows($datos) > 0){
@@ -241,11 +207,16 @@ switch($command){
         case 'intruso': $icono = 🛸👽; break;
       }
 
-      $response = "📊 <b>Estadísticas Personaje</b>\n\n👤 Nombre: $nombre\n$icono Raza: $raza\n🚩 Nivel: $nivel\n🎮 Experiencia: $exp/$expN\n\n💰 Dinero: $dinero\n💀 Asesinatos: $muertes\n\n⚔ Ataque: $ataque\n🛡 Defensa: $defensa\n❤ Vida: $vida";
-      sendDeleteMessage($userId, $messageId, $response, FALSE);
+      if($mi){
+        $response = "📊 <b>Estadísticas Personaje</b>\n\n👤 Nombre: $nombre\n$icono Raza: $raza\n🚩 Nivel: $nivel\n🎮 Experiencia: $exp/$expN\n\n💰 Dinero: $dinero\n💀 Asesinatos: $muertes\n\n⚔ Ataque: $ataque\n🛡 Defensa: $defensa\n❤ Vida: $vida";
+        sendDeleteMessage($userId, $messageId, $response, FALSE);
+      }else{
+        $response = "📊 <b>Estadísticas Personaje</b>\n\n👤 Nombre: $nombre\n$icono Raza: $raza\n🚩 Nivel: $nivel\n\n💀 Asesinatos: $muertes\n\n⚔ Ataque: $ataque\n🛡 Defensa: $defensa\n❤ Vida: $vida";
+        sendDeleteMessage($userId, $messageId, $response, FALSE);
+      }
 
     }else{
-      $response = "⛔ $firstname no tienes un personaje registrado a tu cuenta, para ello utiliza /registrarse.";
+      $response = "⛔ $firstname no existe ningún jugador con ese nombre, intentálo más tarde cuándo lo sepas.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
     }
 
@@ -480,62 +451,83 @@ switch($command){
   break;
 
   // COMANDO PARA MOSTRAR EL RANKING PROPIO DEL JUGADOR.
-  case '/miranking': case '/miranking@FightETSIIT_Bot':
-  include 'config/conexion.php';
-    $consulta = "SELECT * FROM jugadores ORDER BY muertes DESC;";
-    $datos=mysqli_query($conexion,$consulta);
-    $contador = 1;
-    $salida = true;
+  case '/ranking': case '/miranking@FightETSIIT_Bot':
+    include 'config/conexion.php';
 
-    $response .="<b>Posición propia en el Ranking General</b>\n";
-
-    while(($fila=mysqli_fetch_array($datos,MYSQLI_ASSOC)) && $salida){
-
-      $idUsuario = $fila['idUsuario'];
-
-      if($idUsuario == $userId){
-
-      $nombreUsuario = $fila['nombre'];
-      $raza = $fila['raza'];
-      $muertes = $fila['muertes'];
-      $nivel = $fila['nivel'];
-
-      switch($contador){
-        case '1': $icono = 🥇; break;
-        case '2': $icono = 🥈; break;
-        case '3': $icono = 🥉; break;
-        case '4': $icono = 🏅; break;
-        case '5': $icono = 🏅; break;
-        default: $icono = "🎗"; break;
-      }
-
-      switch($raza){
-        case 'informático': $iconoR = 🖥; break;
-        case 'teleco': $iconoR = 📡; break;
-        case 'intruso': $iconoR = 🛸👽; break;
-      }
-
-      $consulta2 = "SELECT COUNT(*) as total FROM jugadores;";
-      $datos2 = mysqli_query($conexion, $consulta2);
-      $fila=mysqli_fetch_array($datos2,MYSQLI_ASSOC);
-      $cantidadUsuarios = $fila['total'];
-
-      $response .= "\n$icono <b>Posicion $contador/$cantidadUsuarios:</b>\n\n👤 Nombre: $nombreUsuario\n$iconoR Raza: $raza\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
-      $salida = false;
-
-      }
-
-      $contador++;
+    if(empty($message)){
+      $usuario=mysqli_real_escape_string($conexion,$userId);
+      $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
+      $comprobar = $userId;
+    }else{
+      $usuario=mysqli_real_escape_string($conexion,$message);
+      $consulta="SELECT * FROM `jugadores` WHERE nombre='$usuario';";
+      $comprobar = $message;
     }
 
-    sendDeleteMessage($userId, $messageId, $response, FALSE);
+    $datos=mysqli_query($conexion,$consulta);
+    if(mysqli_num_rows($datos) > 0){
+
+      $consulta = "SELECT * FROM jugadores ORDER BY muertes DESC;";
+      $datos=mysqli_query($conexion,$consulta);
+      $contador = 1;
+      $salida = true;
+
+      $response .="<b>Posición en el Ranking General</b>\n";
+
+      while(($fila=mysqli_fetch_array($datos,MYSQLI_ASSOC)) && $salida){
+
+        $idUsuario = $fila['idUsuario'];
+        $nombreUsuario = $fila['nombre'];
+
+        if(($idUsuario == $comprobar) || ($nombreUsuario == $comprobar)){
+
+        $nombreUsuario = $fila['nombre'];
+        $raza = $fila['raza'];
+        $muertes = $fila['muertes'];
+        $nivel = $fila['nivel'];
+
+        switch($contador){
+          case '1': $icono = 🥇; break;
+          case '2': $icono = 🥈; break;
+          case '3': $icono = 🥉; break;
+          case '4': $icono = 🏅; break;
+          case '5': $icono = 🏅; break;
+          default: $icono = "🎗"; break;
+        }
+
+        switch($raza){
+          case 'informático': $iconoR = 🖥; break;
+          case 'teleco': $iconoR = 📡; break;
+          case 'intruso': $iconoR = 🛸👽; break;
+        }
+
+        $consulta2 = "SELECT COUNT(*) as total FROM jugadores;";
+        $datos2 = mysqli_query($conexion, $consulta2);
+        $fila=mysqli_fetch_array($datos2,MYSQLI_ASSOC);
+        $cantidadUsuarios = $fila['total'];
+
+        $response .= "\n$icono <b>Posicion $contador/$cantidadUsuarios:</b>\n\n👤 Nombre: $nombreUsuario\n$iconoR Raza: $raza\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
+        sendDeleteMessage($userId, $messageId, $response, FALSE);
+        $salida = false;
+
+        }
+
+        $contador++;
+      }
+    }else{
+      $response = "⛔ $firstname no existe ningún jugador con ese nombre, intentálo más tarde cuándo lo sepas.";
+      sendDeleteMessage($userId, $messageId, $response, FALSE);
+      mysqli_close($conexion);
+      exit;
+    }
+
     mysqli_close($conexion);
     exit;
 
   break;
 
   // COMANDO PARA MOSTRAR EL RANKING GENERAL.
-  case '/ranking': case '/ranking@FightETSIIT_Bot':
+  case '/rankinggeneral': case '/rankinggeneral@FightETSIIT_Bot':
   include 'config/conexion.php';
     $consulta = "SELECT * FROM jugadores ORDER BY muertes DESC LIMIT 10;";
     $datos=mysqli_query($conexion,$consulta);
