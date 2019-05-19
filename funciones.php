@@ -7,6 +7,12 @@ function confirmacion($userId, $peleasPosibles, $estado, $firstname){
     $numeroUno = rand(1,20);
     $numeroDos = rand(1,20);
     $suma = $numeroUno + $numeroDos;
+    $aleatorio = rand(0,1);
+
+    if($aleatorio == 1){
+      $numeroUno = numToText($numeroUno);
+      $numeroDos = numToText($numeroDos);
+    }
 
     include 'config/conexion.php';
     $usuario=mysqli_real_escape_string($conexion,$userId);
@@ -45,6 +51,35 @@ function confirmacion($userId, $peleasPosibles, $estado, $firstname){
     $consulta="UPDATE jugadores SET estado='0' WHERE idUsuario='$usuario';";
     mysqli_query($conexion,$consulta);
   }
+
+}
+
+function numToText($numero){
+
+  switch($numero){
+    case '1': $texto='uno'; break;
+    case '2': $texto='dos'; break;
+    case '3': $texto='tres'; break;
+    case '4': $texto='cuatro'; break;
+    case '5': $texto='cinco'; break;
+    case '6': $texto='seis'; break;
+    case '7': $texto='siete'; break;
+    case '8': $texto='ocho'; break;
+    case '9': $texto='nueve'; break;
+    case '10': $texto='diez'; break;
+    case '11': $texto='once'; break;
+    case '12': $texto='doce'; break;
+    case '13': $texto='trece'; break;
+    case '14': $texto='catorce'; break;
+    case '15': $texto='quince'; break;
+    case '16': $texto='dieciseis'; break;
+    case '17': $texto='diecisiete'; break;
+    case '18': $texto='dieciocho'; break;
+    case '19': $texto='diecinueve'; break;
+    case '20': $texto='veinte'; break;
+  }
+
+  return $texto;
 
 }
 
