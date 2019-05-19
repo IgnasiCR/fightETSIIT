@@ -100,7 +100,7 @@ switch($command){
   // COMANDO PARA CUANDO UN USUARIO EMPIECE DE NUEVO EN EL BOT Y TENGA UN POCO MÁS DE INFORMACIÓN.
   case '/start': case '/start@FightETSIIT_Bot':
 
-    $response = "🎉 Bienvenido a Fight ETSIIT, un juego creado por @IgnasiCR.\n\nPara poder crear tu jugador debes usar el comando /registrarse, podrás elegir entre ser Informático, Teleco o Intruso.\n\nSi colocas una '/' en el chat te saldrán todas las opciones posibles para el juego. Si tienes más dudas puedes utilizar el comando /ayuda.";
+    $response = "🎉 Bienvenido a Fight ETSIIT, un juego creado por @IgnasiCR y @ManuJNR.\n\nPara poder crear tu jugador debes usar el comando /registrar [nombreUsuario] raza, podrás elegir entre ser Informático, Teleco o Intruso.\n\nSi colocas una '/' en el chat te saldrán todas las opciones posibles para el juego. Si tienes más dudas puedes utilizar el comando /ayuda o /comandos.";
     sendDeleteMessage($userId, $messageId, $response, FALSE);
 
     exit;
@@ -116,6 +116,21 @@ switch($command){
     $response .="\n❓ <b>¿Cuántos objetos puedo comprar en la tienda?</b>\nNo hay limite de objetos que puedas comprar en la tienda. Siempre y cuando tengas el dinero para hacerte con alguno de ellos podrás hacerlo.\n";
     $response .="\n❓ <b>¿Cuántas razas existen en Fight ETSIIT?</b>\nExisten tres tipos de razas: informático, teleco e intruso. Cada una de ellas tiene una ventaja importante en el combate.\n\n<b>Informático</b>: Tienen un 20% de conseguir un 50% más de ataque en cada turno.\n<b>Teleco</b>: Tienen un 20% de poder aumentar/curarse la vida en un 50% respecto a su base en cada turno.\n<b>Intruso</b>: Tienen un 20% de conseguir un 50% más de defensa en cada turno.\n";
     $response .="\n❓ <b>¿Puedo cambiarme de raza después de haber elegido?</b>\nSí, siempre y cuándo tengas 10.000 de dinero podrás cambiarte de raza utilizando el comando /cambiarseraza. A partir de ese momento en las luchas podrás obtener el poder oculto de la raza a las que te has cambiado y no se te borrarán los objetos comprados anteriormente de la raza a la que pertenecías.\n";
+
+    sendDeleteMessage($userId, $messageId, $response, FALSE);
+
+    exit;
+  break;
+
+  case '/comandos': case '/comandos@FightETSIIT_Bot':
+
+    $response .="<b>Comandos con parámetros</b>\n\n";
+    $response .="▪ /registrar [nombreUsuario] raza -> En caso de no elegir nombre de usuario se intentará crear la cuenta con el @ que tengas en tu cuenta de Telegram, pero también puedes elegir otro nombre (sin espacios) escribiéndolo antes de la raza. La raza siempre es obligatorio, puedes elegir entre: Informático, Teleco o Intruso. Por ejemplo: /registrar informático o /registrar ignasi_cr teleco.\n";
+    $response .="\n▪ /comprar identificador -> El identificador del objeto a comprar lo puedes ver en /tienda\n";
+    $response .="\n▪ /personaje [nombreJugador] -> En caso de no poner un nombre de un jugador verás tus propias estadísticas, en caso contrario verás las del jugador del nombre escrito.\n";
+    $response .="\n▪ /ranking [nombreJugador] -> En caso de no poner un nombre de un jugador verás tu posición en el ranking general, en caso contrario verás la posición del jugador del nombre escrito.\n";
+    $response .="\n▪ /luchar nombreJugador -> El nombre del jugador será contra el que quieres luchar de forma competitiva.\n";
+    $response .="\n▪ /lucharamistoso nombreJugador -> El nombre del jugador será contra el que quieres luchar de forma amistosa.\n";
 
     sendDeleteMessage($userId, $messageId, $response, FALSE);
 
@@ -146,28 +161,82 @@ switch($command){
     exit;
   break;
 
-    // SISTEMA DE REGISTRO DEL USUARIO.
-    case '/registrarse': case '/registrarse@FightETSIIT_Bot':
+    // SISTEM PARA REGISTRAR A UN USUARIO EN EL SISTEMA.
+    case '/registrar': case '/registrar@FightETSIIT_Bot':
     include 'config/conexion.php';
+
     $usuario=mysqli_real_escape_string($conexion,$userId);
     $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
     $datos=mysqli_query($conexion,$consulta);
 
     if(mysqli_num_rows($datos)==0){
-      $consulta="INSERT INTO `jugadores` (idUsuario, nombre, estado) VALUES ('$userId', '$firstname', '1');";
-      mysqli_query($conexion, $consulta);
 
-      $response = "🆕 $firstname hemos registrado tu cuenta.\n\nTu nombre de jugador será el siguiente: $firstname. Si quieres que sea este tan solo diga 'Si', si quieres otro nombre di el nombre que te gustaría tener.";
-      sendMessage($userId, $response, FALSE);
-      mysqli_close($conexion);
+      if(empty($arr[1])){
+        $response = "⛔ ¡$firstname utiliza /comandos para más información!";
+        sendDeleteMessage($userId, $messageId, $response, FALSE);
+        exit;
+      }else if(empty($arr[2])){
+        if(comprobarRaza($arr[1])){
+
+          $consulta="SELECT * FROM jugadores WHERE nombre='$firstname';";
+          $datos=mysqli_query($conexion,$consulta);
+
+          if(mysqli_num_rows($datos)>0){
+
+            $response = "⛔ $firstname el nombre que has querido utilizar ya está en uso, tendrás que elegir otro, puedes utilizar /registrar nombreJugador raza.";
+            sendMessage($userId, $response, FALSE);
+            exit;
+          }else{
+
+            $consulta="INSERT INTO `jugadores` (idUsuario, nombre, raza) VALUES ('$userId', '$firstname','$arr[1]');";
+            mysqli_query($conexion, $consulta);
+
+            $response = "🆕 $firstname hemos registrado tu cuenta.\n\nTu nombre de jugador será el siguiente: $firstname. Ya puedes empezar a jugar, si tienes dudas puedes utilizar /ayuda o /comandos.";
+            sendMessage($userId, $response, FALSE);
+            mysqli_close($conexion);
+          }
+
+        }else{
+          $response = "⛔ ¡$firstname utiliza /comandos para más información!";
+          sendDeleteMessage($userId, $messageId, $response, FALSE);
+          exit;
+        }
+      }else{
+        if(comprobarRaza($arr[2])){
+
+          $consulta="SELECT * FROM jugadores WHERE nombre='$arr[1]';";
+          $datos=mysqli_query($conexion,$consulta);
+
+          if(mysqli_num_rows($datos)>0){
+
+            $response = "⛔ $firstname el nombre que has querido utilizar ya está en uso, tendrás que elegir otro, puedes utilizar /registrar nombreJugador raza.";
+            sendMessage($userId, $response, FALSE);
+            exit;
+          }else{
+
+            $consulta="INSERT INTO `jugadores` (idUsuario, nombre, raza) VALUES ('$userId', '$arr[1]','$arr[2]');";
+            mysqli_query($conexion, $consulta);
+
+            $response = "🆕 $firstname hemos registrado tu cuenta.\n\nTu nombre de jugador será el siguiente: $arr[1]. Ya puedes empezar a jugar, si tienes dudas puedes utilizar /ayuda o /comandos.";
+            sendMessage($userId, $response, FALSE);
+            mysqli_close($conexion);
+          }
+
+        }else{
+          $response = "⛔ ¡$firstname utiliza /comandos para más información!";
+          sendDeleteMessage($userId, $messageId, $response, FALSE);
+          exit;
+        }
+      }
+
     }else{
-      $response = "⛔ ¡$firstname tu ya tienes un personaje registrado a tu cuenta de Telegram! Puedes utilizar el comando /mipersonaje para más información.";
+      $response = "⛔ ¡$firstname tu ya tienes un personaje registrado a tu cuenta de Telegram! Puedes utilizar el comando /personaje para más información.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
+      exit;
     }
 
-    mysqli_close($conexion);
-    exit;
-  break;
+      exit;
+    break;
 
   // COMANDO PARA QUE EL USUARIO PUEDA CONOCER LAS ESTADÍSTICAS DE TU/UN JUGADOR.
   case '/personaje': case '/personaje@FightETSIIT_Bot':
@@ -266,7 +335,7 @@ switch($command){
       sendDeleteMessage($userId, $messageId, $response, FALSE);
 
     }else{
-      $response = "⛔ $firstname no tienes un personaje registrado a tu cuenta por lo tanto no puedes hacer uso de la tienda, para ello utiliza /registrarse.";
+      $response = "⛔ $firstname no tienes un personaje registrado a tu cuenta por lo tanto no puedes hacer uso de la tienda, para ello utiliza /registrar [nombreJugador] raza.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
     }
 
@@ -405,7 +474,7 @@ switch($command){
       }
 
     }else{
-      $response = "⛔ $firstname no tienes un personaje registrado a tu cuenta por lo tanto no puedes comprar ningún objeto de la tienda, para ello utiliza /registrarse.";
+      $response = "⛔ $firstname no tienes un personaje registrado a tu cuenta por lo tanto no puedes comprar ningún objeto de la tienda, para ello utiliza /registrar [nombreJugador] raza.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
     }
 
@@ -442,7 +511,7 @@ switch($command){
       sendDeleteMessage($userId, $messageId, $response, FALSE);
 
     }else{
-      $response = "⛔ $firstname no tienes un personaje registrado a tu cuenta por lo tanto no puedes comprar ningún objeto de la tienda, para ello utiliza /registrarse.";
+      $response = "⛔ $firstname no tienes un personaje registrado a tu cuenta por lo tanto no puedes comprar ningún objeto de la tienda, para ello utiliza /registrar [nombreJugador] raza.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
     }
 
@@ -955,7 +1024,7 @@ switch($command){
   mysqli_close($conexion2);
 
   }else{
-    $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar.";
+    $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar [nombreJugador] raza.";
     sendDeleteMessage($userId, $messageId, $response, FALSE);
   }
 
@@ -1164,7 +1233,7 @@ switch($command){
       mysqli_close($conexion2);
 
     }else{
-      $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar.";
+      $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar [nombreJugador] raza.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
     }
 
@@ -1427,7 +1496,7 @@ switch($command){
       }
 
     }else{
-      $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar.";
+      $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar [nombreJugador] raza.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
 
       include 'config/conexion2.php';
@@ -1720,7 +1789,7 @@ switch($command){
 
 
     }else{
-      $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar.";
+      $response = "⛔ $firstname no tienes un personaje registrado a su cuenta de Telegram, por lo tanto no puedes luchar contra nadie. Para registrar tu personaje utiliza /registrar [nombreJugador] raza.";
       sendDeleteMessage($userId, $messageId, $response, FALSE);
 
       include 'config/conexion2.php';

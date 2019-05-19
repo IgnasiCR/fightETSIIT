@@ -1,5 +1,19 @@
 <?php
 
+function comprobarRaza($message){
+
+  if($message == 'Informático' || $message == 'Informatico' || $message == 'informático' || $message == 'informatico'){
+    return TRUE;
+  }else if($message == 'Teleco' || $message == 'teleco'){
+    return TRUE;
+  }else if($message == 'Intruso' || $message == 'intruso'){
+    return TRUE;
+  }else{
+    return FALSE;
+  }
+  
+}
+
 function confirmacion($userId, $peleasPosibles, $estado, $firstname){
 
   if(($peleasPosibles == 10 || $peleasPosibles == 20) && $estado == 0){
