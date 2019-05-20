@@ -46,8 +46,61 @@ if(is_numeric($command)){
 
 switch($command){
 
-  // SISTEM PARA RENOVAR LUCHAS.
+  // SISTEMA DE REPORTES A USUARIOS.
 
+  case '/reportar': case '/reportar@FightETSIIT_Bot':
+
+    $jugadorReportado = $arr[1];
+
+    if(!(empty($jugadorReportado))){
+      include 'config/conexion.php';
+      $jugadorReportado=mysqli_real_escape_string($conexion,$arr[1]);
+      $consulta="SELECT * FROM jugadores WHERE nombre='$jugadorReportado';";
+      $datos=mysqli_query($conexion,$consulta);
+
+      if(mysqli_num_rows($datos)>0){
+        $fila=mysqli_fetch_array($datos,MYSQLI_ASSOC);
+
+        $idReportado = $fila['idUsuario'];
+        $mensajeReporte = substr(strstr($message," "), 1);
+
+        if($userId != $idReportado){
+
+          if(!(empty($mensajeReporte))){
+
+            $consulta2="INSERT INTO reportes (jugadorReportante, jugadorReportado, mensaje, fecha) VALUES('$userId','$idReportado','$mensajeReporte',NOW());";
+            mysqli_query($conexion, $consulta2);
+
+            $response = "✅ $firstname el reporte ha sido enviado con éxito, muchísimas gracias por colaborar.";
+            sendDeleteMessage($userId, $messageId, $response, FALSE);
+
+          }else{
+            $response = "⛔ ¡$firstname utiliza /comandos para más información!";
+            sendDeleteMessage($userId, $messageId, $response, FALSE);
+            exit;
+          }
+
+        }else{
+          $response = "⛔ El nombre de jugador es el tuyo, ¿cómo te vas a reportar a ti mismo?";
+          sendDeleteMessage($userId, $messageId, $response, FALSE);
+          exit;
+        }
+      }else{
+        $response = "⛔ El nombre de jugador que has proporcionado no existe, inténtalo de nuevo cuando lo sepas.";
+        sendDeleteMessage($userId, $messageId, $response, FALSE);
+        exit;
+      }
+    }else{
+      $response = "⛔ ¡$firstname utiliza /comandos para más información!";
+      sendDeleteMessage($userId, $messageId, $response, FALSE);
+      exit;
+    }
+
+    mysqli_close($conexion);
+    exit;
+  break;
+
+  // SISTEM PARA RENOVAR LUCHAS.
   case '/renovar': case '/renovar@FightETSIIT_Bot':
   include 'config/conexion.php';
   if($userId == '444137662'){
@@ -126,11 +179,13 @@ switch($command){
 
     $response .="<b>Comandos con parámetros</b>\n\n";
     $response .="▪ /registrar [nombreUsuario] raza -> En caso de no elegir nombre de usuario se intentará crear la cuenta con el @ que tengas en tu cuenta de Telegram, pero también puedes elegir otro nombre (sin espacios) escribiéndolo antes de la raza. La raza siempre es obligatorio, puedes elegir entre: Informático, Teleco o Intruso. Por ejemplo: /registrar informático o /registrar ignasi_cr teleco.\n";
-    $response .="\n▪ /comprar identificador -> El identificador del objeto a comprar lo puedes ver en /tienda\n";
     $response .="\n▪ /personaje [nombreJugador] -> En caso de no poner un nombre de un jugador verás tus propias estadísticas, en caso contrario verás las del jugador del nombre escrito.\n";
+    $response .="\n▪ /comprar identificador -> El identificador del objeto a comprar lo puedes ver en /tienda\n";
     $response .="\n▪ /ranking [nombreJugador] -> En caso de no poner un nombre de un jugador verás tu posición en el ranking general, en caso contrario verás la posición del jugador del nombre escrito.\n";
+    $response .="\n▪ /rankingraza raza -> Podrás ver el TOP10 de jugadores con la raza indicada. Las razas son: informático, teleco o intruso.\n";
     $response .="\n▪ /luchar nombreJugador -> El nombre del jugador será contra el que quieres luchar de forma competitiva.\n";
     $response .="\n▪ /lucharamistoso nombreJugador -> El nombre del jugador será contra el que quieres luchar de forma amistosa.\n";
+    $response .="\n▪ /reportar nombreJugador mensajeReporte -> Todo reporte debe llevar un nombre de un jugador al que deseas reportar y un mensaje. Todo falso reporte que se realice obtendrá una sanción.\n";
 
     sendDeleteMessage($userId, $messageId, $response, FALSE);
 
@@ -235,6 +290,7 @@ switch($command){
       exit;
     }
 
+      mysqli_close($conexion);
       exit;
     break;
 
