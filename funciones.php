@@ -1,5 +1,11 @@
 <?php
 
+function revisarComandos($firstname, $userId, $messageId){
+  $response = "⛔ ¡$firstname utiliza /comandos para más información!";
+  sendDeleteMessage($userId, $messageId, $response, FALSE);
+  exit;
+}
+
 function comprobarRaza($message){
 
   if($message == 'Informático' || $message == 'Informatico' || $message == 'informático' || $message == 'informatico'){
@@ -11,12 +17,12 @@ function comprobarRaza($message){
   }else{
     return FALSE;
   }
-  
+
 }
 
 function confirmacion($userId, $peleasPosibles, $estado, $firstname){
 
-  if(($peleasPosibles == 10 || $peleasPosibles == 20) && $estado == 0){
+  if(($peleasPosibles == 15) && $estado == 0){
 
     $numeroUno = rand(1,20);
     $numeroDos = rand(1,20);

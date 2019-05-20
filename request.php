@@ -22,7 +22,7 @@ if(is_numeric($command)){
     $peleasPosibles = $fila['peleas_posibles'];
     $estado = $fila['estado'];
 
-    if(($peleasPosibles == 10 || $peleasPosibles == 20) && $estado == 8){
+    if(($peleasPosibles == 15) && $estado == 8){
       if($command == $verificacion){
         $usuario=mysqli_real_escape_string($conexion,$userId);
         $consulta="UPDATE jugadores SET estado='9', verificacion=0 WHERE idUsuario='$usuario';";
@@ -75,9 +75,7 @@ switch($command){
             sendDeleteMessage($userId, $messageId, $response, FALSE);
 
           }else{
-            $response = "⛔ ¡$firstname utiliza /comandos para más información!";
-            sendDeleteMessage($userId, $messageId, $response, FALSE);
-            exit;
+            revisarComandos($firstname, $userId, $messageId);
           }
 
         }else{
@@ -91,9 +89,7 @@ switch($command){
         exit;
       }
     }else{
-      $response = "⛔ ¡$firstname utiliza /comandos para más información!";
-      sendDeleteMessage($userId, $messageId, $response, FALSE);
-      exit;
+      revisarComandos($firstname, $userId, $messageId);
     }
 
     mysqli_close($conexion);
@@ -227,9 +223,7 @@ switch($command){
     if(mysqli_num_rows($datos)==0){
 
       if(empty($arr[1])){
-        $response = "⛔ ¡$firstname utiliza /comandos para más información!";
-        sendDeleteMessage($userId, $messageId, $response, FALSE);
-        exit;
+        revisarComandos($firstname, $userId, $messageId);
       }else if(empty($arr[2])){
         if(comprobarRaza($arr[1])){
 
@@ -252,9 +246,7 @@ switch($command){
           }
 
         }else{
-          $response = "⛔ ¡$firstname utiliza /comandos para más información!";
-          sendDeleteMessage($userId, $messageId, $response, FALSE);
-          exit;
+          revisarComandos($firstname, $userId, $messageId);
         }
       }else{
         if(comprobarRaza($arr[2])){
@@ -278,9 +270,7 @@ switch($command){
           }
 
         }else{
-          $response = "⛔ ¡$firstname utiliza /comandos para más información!";
-          sendDeleteMessage($userId, $messageId, $response, FALSE);
-          exit;
+          revisarComandos($firstname, $userId, $messageId);
         }
       }
 
