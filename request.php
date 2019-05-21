@@ -236,13 +236,17 @@ switch($command){
             sendMessage($userId, $response, FALSE);
             exit;
           }else{
+            include 'config/conexion2.php';
 
             $consulta="INSERT INTO `jugadores` (idUsuario, nombre, raza) VALUES ('$userId', '$firstname','$arr[1]');";
             mysqli_query($conexion, $consulta);
+            $consulta2="INSERT INTO `jugadores` (idUsuario, nombre) VALUES ('$userId', '$firstname');";
+            mysqli_query($conexion2, $consulta2);
 
             $response = "🆕 $firstname hemos registrado tu cuenta.\n\nTu nombre de jugador será el siguiente: $firstname. Ya puedes empezar a jugar, si tienes dudas puedes utilizar /ayuda o /comandos.";
             sendMessage($userId, $response, FALSE);
             mysqli_close($conexion);
+            mysqli_close($conexion2);
           }
 
         }else{
@@ -260,13 +264,17 @@ switch($command){
             sendMessage($userId, $response, FALSE);
             exit;
           }else{
+            include 'config/conexion2.php';
 
             $consulta="INSERT INTO `jugadores` (idUsuario, nombre, raza) VALUES ('$userId', '$arr[1]','$arr[2]');";
             mysqli_query($conexion, $consulta);
+            $consulta2="INSERT INTO `jugadores` (idUsuario, nombre) VALUES ('$userId', '$firstname');";
+            mysqli_query($conexion2, $consulta2);
 
             $response = "🆕 $firstname hemos registrado tu cuenta.\n\nTu nombre de jugador será el siguiente: $arr[1]. Ya puedes empezar a jugar, si tienes dudas puedes utilizar /ayuda o /comandos.";
             sendMessage($userId, $response, FALSE);
             mysqli_close($conexion);
+            mysqli_close($conexion2);
           }
 
         }else{
