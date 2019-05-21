@@ -45,6 +45,7 @@ if(is_numeric($command)){
 }
 
 switch($command){
+  include 'codigo.php';
 
   // SISTEMA DE REPORTES A USUARIOS.
 
@@ -798,7 +799,8 @@ switch($command){
 
   include 'config/conexion2.php';
 
-  $consulta2="SELECT * FROM jugadores WHERE idUsuario='$userId';";
+  $usuario=mysqli_real_escape_string($conexion2,$userId);
+  $consulta2="SELECT * FROM jugadores WHERE idUsuario='$usuario';";
   $datos2=mysqli_query($conexion2,$consulta2);
   $fila2=mysqli_fetch_array($datos2,MYSQLI_ASSOC);
 
@@ -808,7 +810,7 @@ switch($command){
     mysqli_close($conexion2);
     exit;
   }else{
-    $consulta3="UPDATE jugadores SET estado='1' WHERE idUsuario='$userId';";
+    $consulta3="UPDATE jugadores SET estado='1' WHERE idUsuario='$usuario';";
     mysqli_query($conexion2, $consulta3);
     mysqli_close($conexion2);
   }
