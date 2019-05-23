@@ -48,6 +48,66 @@ if(is_numeric($command)){
 
 switch($command){
 
+  // SISTEMA ESTADÍSTICAS
+
+  case '/estadistica': case '/estadistica@FightETSIIT_Bot':
+
+    if(($userId == '26994986') || ($userId == '444137662')){
+      include 'config/conexion.php';
+
+      $consulta1="SELECT raza, COUNT(*) NUMERO_JUGADORES, (COUNT(*) / (SELECT COUNT(*) FROM jugadores)) * 100 PORCENTAJE_RAZAS,
+      (SUM(muertes) / (SELECT SUM(jugadores2.muertes) FROM jugadores jugadores2)) * 100 PORCENTAJE_ASESINATOS,
+      AVG(muertes) MEDIA_ASESINATOS, AVG(nivel) NIVEL_MEDIO FROM jugadores GROUP by raza;";
+      $datos1=mysqli_query($conexion, $consulta1);
+
+      $consulta2="SELECT objetos.nombre NOMBRE, COUNT(*) VENTAS, (COUNT(*) / (SELECT COUNT(*) FROM compras)) * 100 PORCENTAJE_VENTAS
+      FROM objetos, compras WHERE objetos.idObjeto=compras.idObjeto GROUP BY objetos.nombre ORDER BY ventas DESC;";
+      $datos2=mysqli_query($conexion, $consulta2);
+
+      $consulta3="SELECT tipo, victoria, COUNT(*) TOTAL_PELEAS, (COUNT(*) / (SELECT COUNT(*) FROM luchas)) * 100 PORCENTAJE_PELEAS
+      FROM luchas GROUP BY tipo, victoria;";
+      $datos3=mysqli_query($conexion, $consulta3);
+
+      $response .= "📊 Estadísticas Fight ETSIIT\n\n";
+
+      $response .="⚔ Jugadores y asesinatos\n";
+      while($fila1=mysqli_fetch_array($datos1,MYSQLI_ASSOC)){
+        $response .= "\n$fila1[raza]\n\n";
+        $response .= "Numero jugadores: $fila1[NUMERO_JUGADORES]\n";
+        $response .= "Porcentaje jugadores: $fila1[PORCENTAJE_RAZAS]%\n";
+        $response .= "Porcentaje asesinatos: $fila1[PORCENTAJE_ASESINATOS]%\n";
+        $response .= "Media de asesinatos: $fila1[MEDIA_ASESINATOS]\n";
+        $response .= "Media de nivel: $fila1[NIVEL_MEDIO]\n";
+      }
+
+      $response .="\n💰 Compra de objetos\n";
+      while($fila2=mysqli_fetch_array($datos2,MYSQLI_ASSOC)){
+        $response .= "\nObjeto: $fila2[NOMBRE]\n";
+        $response .= "Ventas totales: $fila2[VENTAS]\n";
+        $response .= "Porcentaje ventas: $fila2[PORCENTAJE_VENTAS]%\n";
+      }
+
+      $response .= "\n🛡 Luchas\n";
+      while($fila3=mysqli_fetch_array($datos3,MYSQLI_ASSOC)){
+        $response .= "\nTipo: $fila3[tipo] - ";
+        if($fila3['victoria']){
+          $partida = "victoria";
+        }else{
+          $partida = "derrota";
+        }
+        $response .= "$partida\n";
+        $response .= "Total de combates: $fila3[TOTAL_PELEAS]\n";
+        $response .= "Porcentaje de combates: $fila3[PORCENTAJE_PELEAS]%\n";
+      }
+
+      sendDeleteMessage($userId, $messageId, $response, FALSE);
+
+    }
+
+    mysqli_close($conexion);
+    exit;
+  break;
+
   // SISTEMA DE REPORTES A USUARIOS.
 
   case '/reportar': case '/reportar@FightETSIIT_Bot':
