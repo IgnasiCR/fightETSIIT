@@ -179,7 +179,7 @@ switch($command){
     $response .="▪ /registrar [nombreUsuario] raza -> En caso de no elegir nombre de usuario se intentará crear la cuenta con el @ que tengas en tu cuenta de Telegram, pero también puedes elegir otro nombre (sin espacios) escribiéndolo antes de la raza. La raza siempre es obligatorio, puedes elegir entre: Informático, Teleco o Intruso. Por ejemplo: /registrar informático o /registrar ignasi_cr teleco.\n";
     $response .="\n▪ /personaje [nombreJugador] -> En caso de no poner un nombre de un jugador verás tus propias estadísticas, en caso contrario verás las del jugador del nombre escrito.\n";
     $response .="\n▪ /comprar identificador -> El identificador del objeto a comprar lo puedes ver en /tienda\n";
-    $response .="\n▪ /ranking [nombreJugador] -> En caso de no poner un nombre de un jugador verás tu posición en el ranking general, en caso contrario verás la posición del jugador del nombre escrito.\n";
+    $response .="\n▪ /ranking [nombreJugador/numero] -> En caso de no poner un nombre de un jugador verás tu posición en el ranking general, en caso contrario verás la posición del jugador del nombre escrito o quién se encuentra en la posición indicada.\n";
     $response .="\n▪ /rankingraza raza -> Podrás ver el TOP10 de jugadores con la raza indicada. Las razas son: informático, teleco o intruso.\n";
     $response .="\n▪ /luchar nombreJugador -> El nombre del jugador será contra el que quieres luchar de forma competitiva.\n";
     $response .="\n▪ /lucharamistoso nombreJugador -> El nombre del jugador será contra el que quieres luchar de forma amistosa.\n";
@@ -587,8 +587,15 @@ switch($command){
     if(empty($message)){
       existeUsuario($userId, $firstname, $userId, $messageId);
       $comprobar = $userId;
-    }else if((is_numeric($message)) && ($message > 0 && $message <= $cantidadUsuarios)){
+    }else if((is_numeric($message))){
+      if(($message > 0 && $message <= $cantidadUsuarios)){
       $comprobar = $message;
+      }else{
+        $response = "⛔ $firstname debes indicar un número válido, inténtalo más tarde.";
+        sendDeleteMessage($userId, $messageId, $response, FALSE);
+        mysqli_close($conexion);
+        exit;
+      }
     }else{
       existeUsuario($message, $firstname, $userId, $messageId);
       $comprobar = $message;
