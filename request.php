@@ -44,8 +44,9 @@ if(is_numeric($command)){
   exit;
 }
 
-switch($command){
   include 'codigo.php';
+
+switch($command){
 
   // SISTEMA DE REPORTES A USUARIOS.
 
@@ -578,18 +579,20 @@ switch($command){
   case '/ranking': case '/miranking@FightETSIIT_Bot':
     include 'config/conexion.php';
 
+    $consulta2 = "SELECT COUNT(*) as total FROM jugadores;";
+    $datos2 = mysqli_query($conexion, $consulta2);
+    $fila=mysqli_fetch_array($datos2,MYSQLI_ASSOC);
+    $cantidadUsuarios = $fila['total'];
+
     if(empty($message)){
-      $usuario=mysqli_real_escape_string($conexion,$userId);
-      $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
+      existeUsuario($userId, $firstname, $userId, $messageId);
       $comprobar = $userId;
+    }else if((is_numeric($message)) && ($message > 0 && $message <= $cantidadUsuarios)){
+      $comprobar = $message;
     }else{
-      $usuario=mysqli_real_escape_string($conexion,$message);
-      $consulta="SELECT * FROM `jugadores` WHERE nombre='$usuario';";
+      existeUsuario($message, $firstname, $userId, $messageId);
       $comprobar = $message;
     }
-
-    $datos=mysqli_query($conexion,$consulta);
-    if(mysqli_num_rows($datos) > 0){
 
       $consulta = "SELECT * FROM jugadores ORDER BY muertes DESC;";
       $datos=mysqli_query($conexion,$consulta);
@@ -603,7 +606,7 @@ switch($command){
         $idUsuario = $fila['idUsuario'];
         $nombreUsuario = $fila['nombre'];
 
-        if(($idUsuario == $comprobar) || ($nombreUsuario == $comprobar)){
+        if(($idUsuario == $comprobar) || ($nombreUsuario == $comprobar) || ($contador == $comprobar)){
 
         $nombreUsuario = $fila['nombre'];
         $raza = $fila['raza'];
@@ -625,11 +628,6 @@ switch($command){
           case 'intruso': $iconoR = 🛸👽; break;
         }
 
-        $consulta2 = "SELECT COUNT(*) as total FROM jugadores;";
-        $datos2 = mysqli_query($conexion, $consulta2);
-        $fila=mysqli_fetch_array($datos2,MYSQLI_ASSOC);
-        $cantidadUsuarios = $fila['total'];
-
         $response .= "\n$icono <b>Posicion $contador/$cantidadUsuarios:</b>\n\n👤 Nombre: $nombreUsuario\n$iconoR Raza: $raza\n🚩 Nivel: $nivel\n💀 Asesinatos: $muertes\n";
         sendDeleteMessage($userId, $messageId, $response, FALSE);
         $salida = false;
@@ -638,12 +636,6 @@ switch($command){
 
         $contador++;
       }
-    }else{
-      $response = "⛔ $firstname no existe ningún jugador con ese nombre, intentálo más tarde cuándo lo sepas.";
-      sendDeleteMessage($userId, $messageId, $response, FALSE);
-      mysqli_close($conexion);
-      exit;
-    }
 
     mysqli_close($conexion);
     exit;

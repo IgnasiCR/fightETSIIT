@@ -1,5 +1,28 @@
 <?php
 
+function existeUsuario($usuario, $firstname, $userId, $messageId){
+  include 'config/conexion.php';
+
+  if(is_numeric($usuario)){
+    $usuario=mysqli_real_escape_string($conexion,$usuario);
+    $consulta="SELECT * FROM `jugadores` WHERE idUsuario='$usuario';";
+  }else{
+    $usuario=mysqli_real_escape_string($conexion,$usuario);
+    $consulta="SELECT * FROM `jugadores` WHERE nombre='$usuario';";
+  }
+
+  $datos=mysqli_query($conexion,$consulta);
+  if(mysqli_num_rows($datos) > 0){
+
+  }else{
+    $response = "⛔ $firstname no existe ningún jugador con ese nombre, intentálo más tarde cuándo lo sepas.";
+    sendDeleteMessage($userId, $messageId, $response, FALSE);
+    mysqli_close($conexion);
+    exit;
+  }
+
+}
+
 function revisarComandos($firstname, $userId, $messageId){
   $response = "⛔ ¡$firstname utiliza /comandos para más información!";
   sendDeleteMessage($userId, $messageId, $response, FALSE);
